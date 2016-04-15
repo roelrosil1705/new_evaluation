@@ -20,11 +20,11 @@
         <activity
             android:name=".activities.AdminDashboardActivity"
             android:label="@string/title_activity_admin_dashboard"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.Category"
             android:label="@string/title_activity_category"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.ProjectsActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
