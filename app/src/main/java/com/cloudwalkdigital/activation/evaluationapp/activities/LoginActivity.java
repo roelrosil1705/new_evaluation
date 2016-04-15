@@ -1,4 +1,4 @@
-package com.cloudwalkdigital.activation.evaluationapp;
+package com.cloudwalkdigital.activation.evaluationapp.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -12,16 +12,17 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.cloudwalkdigital.activation.evaluationapp.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private static final int REQUEST_READ_CONTACTS = 0;
 
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_log_in)
     public void Login() {
-        ringProgressDialog = ProgressDialog.show(MainActivity.this, "Please wait ...", "", true);
+        ringProgressDialog = ProgressDialog.show(LoginActivity.this, "Please wait ...", "", true);
         ringProgressDialog.setCancelable(true);
         new Thread(new Runnable() {
             @Override
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchRingDialog(View view) {
-        final ProgressDialog ringProgressDialog = ProgressDialog.show(MainActivity.this, "Please wait ...", "", true);
+        final ProgressDialog ringProgressDialog = ProgressDialog.show(LoginActivity.this, "Please wait ...", "", true);
         ringProgressDialog.setCancelable(true);
         new Thread(new Runnable() {
             @Override
@@ -196,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
             ringProgressDialog.dismiss();
             if (success) {
                 if(mEmail.equalsIgnoreCase("admin")){
-                    startActivity(new Intent(getApplicationContext(), AdminDashboard.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                    startActivity(new Intent(getApplicationContext(), AdminDashboardActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }else{
                     startActivity(new Intent(getApplicationContext(), QuestionActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }

@@ -1,4 +1,4 @@
-package com.cloudwalkdigital.activation.evaluationapp;
+package com.cloudwalkdigital.activation.evaluationapp.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -6,6 +6,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+
+import com.cloudwalkdigital.activation.evaluationapp.R;
 
 public class Category extends AppCompatActivity {
 
