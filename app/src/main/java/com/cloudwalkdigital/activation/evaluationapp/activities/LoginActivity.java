@@ -22,7 +22,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private static final int REQUEST_READ_CONTACTS = 0;
 
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_log_in)
     public void Login() {
-        ringProgressDialog = ProgressDialog.show(MainActivity.this, "Please wait ...", "", true);
+        ringProgressDialog = ProgressDialog.show(LoginActivity.this, "Please wait ...", "", true);
         ringProgressDialog.setCancelable(true);
         new Thread(new Runnable() {
             @Override
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchRingDialog(View view) {
-        final ProgressDialog ringProgressDialog = ProgressDialog.show(MainActivity.this, "Please wait ...", "", true);
+        final ProgressDialog ringProgressDialog = ProgressDialog.show(LoginActivity.this, "Please wait ...", "", true);
         ringProgressDialog.setCancelable(true);
         new Thread(new Runnable() {
             @Override
@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
             ringProgressDialog.dismiss();
             if (success) {
                 if(mEmail.equalsIgnoreCase("admin")){
-                    startActivity(new Intent(getApplicationContext(), AdminDashboard.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                    startActivity(new Intent(getApplicationContext(), AdminDashboardActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }else{
                     startActivity(new Intent(getApplicationContext(), ProjectsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
