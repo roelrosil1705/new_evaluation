@@ -28,7 +28,7 @@
         <activity
             android:name=".ProjectsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".QuestionActivity"></activity>
+        <activity android:name=".activities.QuestionActivity"></activity>
     </application>
 
 </manifest>

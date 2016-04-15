@@ -1,9 +1,12 @@
-package com.cloudwalkdigital.activation.evaluationapp;
+package com.cloudwalkdigital.activation.evaluationapp.activities;
 
 import android.database.SQLException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
+
+import com.cloudwalkdigital.activation.evaluationapp.models.DataBaseHelper;
+import com.cloudwalkdigital.activation.evaluationapp.R;
 
 import java.io.IOException;
 

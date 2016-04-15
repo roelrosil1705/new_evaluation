@@ -1,4 +1,4 @@
-package com.cloudwalkdigital.activation.evaluationapp;
+package com.cloudwalkdigital.activation.evaluationapp.models;
 
 import android.content.Context;
 import android.database.Cursor;
