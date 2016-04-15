@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,15 +18,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AdminDashboard"
+            android:name=".activities.AdminDashboardActivity"
             android:label="@string/title_activity_admin_dashboard"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".Category"
+            android:name=".activities.Category"
             android:label="@string/title_activity_category"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".ProjectsActivity"
+            android:name=".activities.ProjectsActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
