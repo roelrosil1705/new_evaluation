@@ -18,11 +18,11 @@ import butterknife.ButterKnife;
 
 public class QuestionActivity extends AppCompatActivity {
 
-    @Bind(R.id.header_title)
-    TextView htitle;
-
-    @Bind(R.id.department_label)
-    TextView dlabel;
+    @Bind(R.id.header_title) TextView hTitle;
+    @Bind(R.id.department_label) TextView dLabel;
+    @Bind(R.id.section_label) TextView sLabel;
+    @Bind(R.id.question_label) TextView qLabel;
+    @Bind(R.id.questionHead_label) TextView qHeadLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +32,11 @@ public class QuestionActivity extends AppCompatActivity {
         Typeface mostserratBold = Typeface.createFromAsset(getAssets(), "fonts/MONTSERRAT-BOLD.OTF");
         Typeface mostserratRegular = Typeface.createFromAsset(getAssets(), "fonts/MONTSERRAT-REGULAR.OTF");
         Typeface mostserratLight = Typeface.createFromAsset(getAssets(), "fonts/MONTSERRAT-LIGHT.OTF");
-        htitle.setTypeface(mostserratRegular);
-        dlabel.setTypeface(mostserratLight);
-
+        hTitle.setTypeface(mostserratRegular);
+        dLabel.setTypeface(mostserratLight);
+        sLabel.setTypeface(mostserratRegular);
+        qLabel.setTypeface(mostserratRegular);
+        qHeadLabel.setTypeface(mostserratRegular);
 /*
         DataBaseHelper myDbHelper = new DataBaseHelper(this);
         try {

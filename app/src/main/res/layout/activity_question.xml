@@ -9,7 +9,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:background="@color/colorAccent"
+        android:background="@drawable/shadow"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
@@ -57,14 +57,16 @@
         android:paddingLeft="50dp"
         android:orientation="vertical"
         android:paddingRight="50dp"
-        android:paddingBottom="30dp">
+        android:paddingBottom="30dp"
+        android:background="@color/colorAccent">
 
         <TextView
             android:id="@+id/header_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Dove School Event"
-            android:textSize="30dp" />
+            android:textSize="30dp"
+            android:textColor="@android:color/white"/>
 
         <TextView
             android:id="@+id/department_label"
@@ -72,19 +74,18 @@
             android:layout_height="wrap_content"
             android:text="Operations"
             android:textSize="25dp"
-            android:textStyle="bold"/>
+            android:textColor="@android:color/white"/>
 
     </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="#fafafa"
             android:paddingLeft="50dp"
             android:paddingRight="50dp">
 
             <TextView
+                android:id="@+id/section_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pre Event"
@@ -92,11 +93,107 @@
                 android:textSize="23sp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
+                android:layout_alignParentLeft="true"
                 />
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/question_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Question 78 of 500"
+                android:textColor="#404040"
+                android:textSize="23sp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:layout_alignParentRight="true"
+                android:alpha=".5"
+                />
+
+        </RelativeLayout>
 
     </android.support.design.widget.AppBarLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:layout_marginTop="70dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView
+            android:id="@+id/questionHead_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="26dp"
+            android:textColor="#404040"
+            android:text="78. Updated all concerned departments on negotiations status of the venues and/or other channels:"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical">
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Details explained through Gantt Chart"/>
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Status shared via Viber"/>
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Status shared via Email"/>
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Status shared via Calls/SMS"/>
+
+            </RadioGroup>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NEXT"
+                android:layout_marginTop="30dp"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/blue_50"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BACK"/>
+
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
