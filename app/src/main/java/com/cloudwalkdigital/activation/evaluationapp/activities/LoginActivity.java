@@ -108,25 +108,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void launchRingDialog(View view) {
-        final ProgressDialog ringProgressDialog = ProgressDialog.show(LoginActivity.this, "Please wait ...", "", true);
-        ringProgressDialog.setCancelable(true);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // Here you should write your time consuming task...
-                    // Let the progress ring for 10 seconds...
-                    Thread.sleep(10000);
-                } catch (Exception e) {
-
-                }
-                ringProgressDialog.dismiss();
-            }
-        }).start();
-    }
-
-
     private void attemptLogin() {
         if (mAuthTask != null) {
             return;
