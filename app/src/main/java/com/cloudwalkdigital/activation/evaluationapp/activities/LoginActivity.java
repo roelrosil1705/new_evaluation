@@ -34,7 +34,9 @@ public class LoginActivity extends AppCompatActivity {
     ProgressDialog ringProgressDialog;
     Handler updateBarHandler;
 
-    @Bind(R.id.atv_email) EditText mEmailView;
+    String email, password;
+
+    @Bind(R.id.atv_email)   EditText mEmailView;
     @Bind(R.id.et_password) EditText mPasswordView;
 
     @Override
@@ -48,10 +50,8 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    //attemptLogin();
-                    Toast.makeText(getApplicationContext(),"attemptLogin",Toast.LENGTH_LONG).show();
-                    return true;
+                if (textView.getImeActionLabel().equals("Log In")) {
+                    Login();
                 }
                 return false;
             }
@@ -60,22 +60,52 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_log_in)
     public void Login() {
-        ringProgressDialog = ProgressDialog.show(LoginActivity.this, "Please wait ...", "", true);
-        ringProgressDialog.setCancelable(true);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // Here you should write your time consuming task...
-                    // Let the progress ring for 10 seconds...
-                    //Thread.sleep(10000);
-                } catch (Exception e) {
+//        ringProgressDialog = ProgressDialog.show(LoginActivity.this, "Please wait ...", "", true);
+//        ringProgressDialog.setCancelable(true);
+//        attemptLogin();
 
-                }
-                //ringProgressDialog.dismiss();
-            }
-        }).start();
-        attemptLogin();
+        email = mEmailView.getText().toString();
+        password = mPasswordView.getText().toString();
+
+        mEmailView.setError(null);
+        mPasswordView.setError(null);
+
+        boolean cancel = false;
+        View focusView = null;
+
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        }else if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mPasswordView;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.error_field_required));
+            focusView = mEmailView;
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+                // Show a progress spinner, and kick off a background task to
+                // perform the user login attempt.
+                //showProgress(true);
+
+            ringProgressDialog = new ProgressDialog(LoginActivity.this);
+            ringProgressDialog.setMessage("Please wait...");
+            ringProgressDialog.setIndeterminate(true);
+            ringProgressDialog.setCancelable(true);
+
+            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask.execute();
+        }
     }
 
     public void launchRingDialog(View view) {
@@ -166,14 +196,21 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
+        protected void onPreExecute() {
+            // Things to be done before execution of long running operation. For
+            // example showing ProgessDialog
+            ringProgressDialog.show();
+        }
+
+        @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
             boolean match = false;
+
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
-                return false;
+                e.printStackTrace();
             }
 
             for (String credential : DUMMY_CREDENTIALS) {
