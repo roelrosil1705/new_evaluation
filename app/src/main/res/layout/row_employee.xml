@@ -4,17 +4,14 @@
     android:id="@+id/card_category"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/activity_vertical_margin"
-    android:layout_marginLeft="20dp"
-    android:layout_marginRight="20dp"
-    android:padding="5dp"
     card_view:cardElevation="3dp"
     card_view:cardCornerRadius="2dp"
     android:fitsSystemWindows="true">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,12 +37,13 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tv_department"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:text="Role"/>
+            android:text="Department"/>
 
     </FrameLayout>
 

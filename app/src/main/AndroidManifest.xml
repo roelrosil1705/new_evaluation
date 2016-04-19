@@ -22,6 +22,9 @@
             android:label="@string/title_activity_admin_dashboard"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".activities.CreateEmployeeActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
             android:name=".activities.Category"
             android:label="@string/title_activity_category"
             android:theme="@style/AppTheme.NoActionBar" />

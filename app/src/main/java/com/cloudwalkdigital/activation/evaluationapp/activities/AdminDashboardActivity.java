@@ -21,17 +21,12 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
-    private Realm realm;
-    private RealmConfiguration realmConfig;
-
-    @Bind(R.id.toolbar) Toolbar toolbar;
-    @Bind(R.id.tabs) TabLayout tabLayout;
-    @Bind(R.id.viewpager) ViewPager viewPager;
+    @Bind(R.id.toolbar)     Toolbar toolbar;
+    @Bind(R.id.tabs)        TabLayout tabLayout;
+    @Bind(R.id.viewpager)   ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +38,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
-
-        realmConfig = new RealmConfiguration.Builder(this).build();
-        realm = Realm.getInstance(realmConfig);
 
     }
 
