@@ -1,17 +1,17 @@
 package com.cloudwalkdigital.activation.evaluationapp.activities;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,13 +35,13 @@ public class LoginActivity extends AppCompatActivity {
     ProgressDialog ringProgressDialog;
     Handler updateBarHandler;
 
-    @Bind(R.id.atv_email) AutoCompleteTextView mEmailView;
+    @Bind(R.id.atv_email) EditText mEmailView;
     @Bind(R.id.et_password) EditText mPasswordView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         updateBarHandler = new Handler();
@@ -199,7 +199,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(mEmail.equalsIgnoreCase("admin")){
                     startActivity(new Intent(getApplicationContext(), AdminDashboardActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }else{
-                    startActivity(new Intent(getApplicationContext(), QuestionActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                    startActivity(new Intent(getApplicationContext(), ProjectsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
                 finish();
                 //Toast.makeText(getApplicationContext(),mEmail + " - " + mRoles,Toast.LENGTH_LONG).show();
