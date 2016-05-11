@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.cloudwalkdigital.activation.evaluationapp.R;
 import com.cloudwalkdigital.activation.evaluationapp.activities.CreateEmployeeActivity;
@@ -26,6 +27,7 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by jpjpjp28 on 14/04/2016.
@@ -69,18 +71,17 @@ public class EmployeesFragment extends Fragment {
         employeeAdapter = new EmployeeAdapter(listEmployeeModels);
 
         //Query for all the employee
-        RealmResults<EmployeeModel> query = realm.where(EmployeeModel.class)
-                .findAll();
-
+        RealmResults<EmployeeModel> query = realm.where(EmployeeModel.class).findAll();
+        query.sort("id", Sort.DESCENDING);
         for(EmployeeModel o : query) {
             listEmployeeModels.add(o);
         }
         rvList.setAdapter(employeeAdapter);
 
+
         return view;
     }
 
-    @OnClick(R.id.btn_add)
     public void AddEmployee() {
         startActivity(new Intent(getContext(), CreateEmployeeActivity.class));
     }

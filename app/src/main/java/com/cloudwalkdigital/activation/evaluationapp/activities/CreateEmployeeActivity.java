@@ -1,5 +1,6 @@
 package com.cloudwalkdigital.activation.evaluationapp.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
@@ -72,17 +73,27 @@ public class CreateEmployeeActivity extends AppCompatActivity {
 
         //Add employee to realm database
         realm.beginTransaction();
-        EmployeeModel employeeModel = realm.createObject(EmployeeModel.class);
+        //EmployeeModel employeeModel = realm.createObject(EmployeeModel.class);
+        EmployeeModel employeeModel = new EmployeeModel();
+        //EmployeeModel employeeModel = realm.allObjects(EmployeeModel.class);
         long key = 0;
+        if(employeeModel.isValid()){
+            employeeModel = new EmployeeModel();
+        }else{
+            employeeModel = realm.createObject(EmployeeModel.class);
+        }
+
         try {
-            key = realm.where(EmployeeModel.class).max("id").longValue();
+            key = realm.where(EmployeeModel.class).max("id").longValue() + 1;
         } catch (ArrayIndexOutOfBoundsException e) {
             key = 0;
         }
+
         employeeModel.setId(key);
         employeeModel.setName(name);
         employeeModel.setEmail(email);
         employeeModel.setDepartment(department);
+        realm.copyToRealm(employeeModel);
         realm.commitTransaction();
 
         Close();
@@ -91,5 +102,13 @@ public class CreateEmployeeActivity extends AppCompatActivity {
     @OnClick(R.id.iv_x)
     public void Close() {
         finish();
+    }
+
+    @Override
+    public void finish() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("passed_item", "OK_PASSED");
+        setResult(RESULT_OK, returnIntent);
+        super.finish();
     }
 }

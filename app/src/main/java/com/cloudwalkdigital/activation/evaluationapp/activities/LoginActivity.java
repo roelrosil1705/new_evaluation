@@ -1,7 +1,9 @@
 package com.cloudwalkdigital.activation.evaluationapp.activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,17 +28,20 @@ public class LoginActivity extends AppCompatActivity {
     private static final int REQUEST_READ_CONTACTS = 0;
 
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "admin:admin:administrator", "henry:bryan:setup"
+            "admin:admin:administrator", "accounts:accounts:Accounts", "cmtuva:cmtuva:CMTUVA", "ceo:ceoceo:MBQ", "pm:pmpm:Project Manager", "stp:stpstp:Setup Head"
     };
+
+    public static final String PREFS_NAME = "MyPref";
+    SharedPreferences sharedPreference;
+
+    String LOG_IN = "User";
 
     private UserLoginTask mAuthTask = null;
 
     ProgressDialog ringProgressDialog;
     Handler updateBarHandler;
 
-    String email, password;
-
-    @Bind(R.id.atv_email)   EditText mEmailView;
+    @Bind(R.id.atv_email) EditText mEmailView;
     @Bind(R.id.et_password) EditText mPasswordView;
 
     @Override
@@ -47,11 +52,15 @@ public class LoginActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         updateBarHandler = new Handler();
 
+        sharedPreference = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (textView.getImeActionLabel().equals("Log In")) {
-                    Login();
+                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                    //attemptLogin();
+                    Toast.makeText(getApplicationContext(),"attemptLogin",Toast.LENGTH_LONG).show();
+                    return true;
                 }
                 return false;
             }
@@ -60,52 +69,24 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_log_in)
     public void Login() {
-//        ringProgressDialog = ProgressDialog.show(LoginActivity.this, "Please wait ...", "", true);
-//        ringProgressDialog.setCancelable(true);
-//        attemptLogin();
+        ringProgressDialog = new ProgressDialog(LoginActivity.this);
+        ringProgressDialog.setMessage("Please wait...");
+        ringProgressDialog.setIndeterminate(true);
+        ringProgressDialog.setCancelable(false);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Here you should write your time consuming task...
+                    // Let the progress ring for 10 seconds...
+                    //Thread.sleep(10000);
+                } catch (Exception e) {
 
-        email = mEmailView.getText().toString();
-        password = mPasswordView.getText().toString();
-
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
-
-        boolean cancel = false;
-        View focusView = null;
-
-        if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
-            focusView = mPasswordView;
-            cancel = true;
-        }else if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        }
-
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-                // Show a progress spinner, and kick off a background task to
-                // perform the user login attempt.
-                //showProgress(true);
-
-            ringProgressDialog = new ProgressDialog(LoginActivity.this);
-            ringProgressDialog.setMessage("Please wait...");
-            ringProgressDialog.setIndeterminate(true);
-            ringProgressDialog.setCancelable(true);
-
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute();
-        }
+                }
+                //ringProgressDialog.dismiss();
+            }
+        }).start();
+        attemptLogin();
     }
 
     private void attemptLogin() {
@@ -187,11 +168,11 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
             boolean match = false;
-
             try {
-                Thread.sleep(3000);
+                // Simulate network access.
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                return false;
             }
 
             for (String credential : DUMMY_CREDENTIALS) {
@@ -213,11 +194,16 @@ public class LoginActivity extends AppCompatActivity {
             //showProgress(false);
             ringProgressDialog.dismiss();
             if (success) {
+                SharedPreferences.Editor editor = sharedPreference.edit();
+                editor.putString("EVALUATOR", mEmail);
                 if(mEmail.equalsIgnoreCase("admin")){
+                    editor.putString("USER", "admin");
                     startActivity(new Intent(getApplicationContext(), AdminDashboardActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }else{
+                    editor.putString("USER", "evaluator");
                     startActivity(new Intent(getApplicationContext(), QuestionActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
+                editor.commit();
                 finish();
                 //Toast.makeText(getApplicationContext(),mEmail + " - " + mRoles,Toast.LENGTH_LONG).show();
             } else {

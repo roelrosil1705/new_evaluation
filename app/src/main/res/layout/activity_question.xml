@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:foo="http://schemas.android.com/tools"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
@@ -16,49 +16,18 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorAccent"
             android:layout_alignParentTop="true"
             app:popupTheme="@style/AppTheme.PopupOverlay" >
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@mipmap/ic_arrow_back_white_36dp"
-                android:background="#00000000"
-                android:foregroundGravity="left"
-                android:adjustViewBounds="true"
-                />
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@mipmap/ic_more_vert_white_36dp"
-                android:background="#00000000"
-                android:foregroundGravity="right"
-                android:layout_gravity="right"
-                android:adjustViewBounds="true"
-                />
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@mipmap/ic_refresh_white_36dp"
-                android:background="#00000000"
-                android:foregroundGravity="right"
-                android:layout_gravity="right"
-                android:adjustViewBounds="true"
-                />
-
         </android.support.v7.widget.Toolbar>
 
     <LinearLayout
+        android:id="@+id/ll_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="50dp"
         android:orientation="vertical"
         android:paddingRight="50dp"
-        android:paddingBottom="30dp"
-        android:background="@color/colorAccent">
+        android:paddingBottom="30dp">
 
         <TextView
             android:id="@+id/header_title"
@@ -68,13 +37,15 @@
             android:textSize="30dp"
             android:textColor="@android:color/white"/>
 
-        <TextView
+        <com.cloudwalkdigital.activation.evaluationapp.utils.TextViewPlus
             android:id="@+id/department_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            foo:customFont="fonts/MONTSERRAT-LIGHT.OTF"
             android:text="Operations"
             android:textSize="25dp"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white"
+            />
 
     </LinearLayout>
 
@@ -100,7 +71,6 @@
                 android:id="@+id/question_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Question 78 of 500"
                 android:textColor="#404040"
                 android:textSize="23sp"
                 android:paddingTop="10dp"
@@ -113,87 +83,80 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="50dp"
-        android:paddingRight="50dp"
-        android:layout_marginTop="70dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/questionHead_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="26dp"
-            android:textColor="#404040"
-            android:text="78. Updated all concerned departments on negotiations status of the venues and/or other channels:"
-            />
-
-        <LinearLayout
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp"
-            android:layout_marginTop="30dp"
-            android:orientation="vertical">
+            android:layout_height="match_parent"/>
 
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+    </RelativeLayout>
 
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="Details explained through Gantt Chart"/>
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="Status shared via Viber"/>
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="Status shared via Email"/>
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="Status shared via Calls/SMS"/>
-
-            </RadioGroup>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="NEXT"
-                android:layout_marginTop="30dp"
-                android:background="@color/colorPrimary"
-                android:textColor="@color/blue_50"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_gravity="bottom"
+        android:background="@drawable/shadow_bottom"
         >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="BACK"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentLeft="true"
+                android:id="@+id/ll_left">
 
-    </LinearLayout>
+                <Button
+                    android:id="@+id/prevBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:drawableLeft="@mipmap/ic_chevron_left_black_36dp"
+                    android:text="BACK"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:id="@+id/ll_center">
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/progressBar"
+                    android:progress="30"
+                    android:max="100"
+                    android:indeterminate="false"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:minWidth="300dp"
+                    android:minHeight="50dp"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentRight="true"
+                android:id="@+id/ll_right">
+
+                <Button
+                    android:id="@+id/nxtBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:drawableRight="@mipmap/ic_chevron_right_black_36dp"
+                    android:text="NEXT"/>
+
+            </LinearLayout>
+
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

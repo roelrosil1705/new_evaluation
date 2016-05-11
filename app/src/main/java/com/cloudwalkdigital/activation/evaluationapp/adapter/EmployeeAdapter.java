@@ -1,10 +1,15 @@
 package com.cloudwalkdigital.activation.evaluationapp.adapter;
 
+import android.content.Context;
+import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cloudwalkdigital.activation.evaluationapp.R;
 import com.cloudwalkdigital.activation.evaluationapp.models.EmployeeModel;
@@ -20,6 +25,7 @@ import butterknife.ButterKnife;
 public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.EmployeeViewHolder> {
 
     List<EmployeeModel> employeeModels;
+    static Context vg;
 
     public EmployeeAdapter(List<EmployeeModel> employeeModels) {
         this.employeeModels = employeeModels;
@@ -30,6 +36,7 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
         View itemView = LayoutInflater.
                 from(parent.getContext()).
                 inflate(R.layout.row_employee, parent, false);
+        vg = parent.getContext();
         return new EmployeeViewHolder(itemView);
     }
 
@@ -37,6 +44,7 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
     public void onBindViewHolder(EmployeeViewHolder holder, int position) {
         holder.tvName.setText(employeeModels.get(position).getName());
         holder.tvEmail.setText(employeeModels.get(position).getEmail());
+        //holder.tvEmail.setText(employeeModels.get(position).getId()+"");
         holder.tvDepartment.setText(employeeModels.get(position).getDepartment());
     }
 
@@ -45,7 +53,7 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
         return employeeModels.size();
     }
 
-    public static class EmployeeViewHolder extends RecyclerView.ViewHolder {
+    public static class EmployeeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @Bind(R.id.tv_name) TextView tvName;
         @Bind(R.id.tv_job_title) TextView tvEmail;
@@ -53,7 +61,13 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
 
         public EmployeeViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             ButterKnife.bind(this, itemView);
         }
+
+        public void onClick(View view) {
+            Toast.makeText(vg,"sampel"+ tvName.getText(),Toast.LENGTH_SHORT).show();
+        }
+
     }
 }
