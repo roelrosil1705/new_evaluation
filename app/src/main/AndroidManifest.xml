@@ -22,18 +22,21 @@
             android:label="@string/title_activity_admin_dashboard"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".activities.CreateEmployeeActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".activities.Category"
             android:label="@string/title_activity_category"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.ProjectsActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.QuestionActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity
-            android:name=".activities.EventActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activities.FinishActivity" />
+        <activity android:name=".activities.CreateEventsActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

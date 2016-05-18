@@ -2,7 +2,9 @@ package com.cloudwalkdigital.activation.evaluationapp.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,8 +29,13 @@ public class LoginActivity extends AppCompatActivity {
     private static final int REQUEST_READ_CONTACTS = 0;
 
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "admin:admin:administrator", "henry:bryan:setup"
+            "admin:admin:administrator", "accounts:accounts:Accounts", "cmtuva:cmtuva:CMTUVA", "ceo:ceoceo:MBQ", "pm:pmpm:Project Manager", "stp:stpstp:Setup Head"
     };
+
+    public static final String PREFS_NAME = "MyPref";
+    SharedPreferences sharedPreference;
+
+    String LOG_IN = "User";
 
     private UserLoginTask mAuthTask = null;
 
@@ -46,6 +53,8 @@ public class LoginActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         updateBarHandler = new Handler();
 
+        sharedPreference = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -61,8 +70,10 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_log_in)
     public void Login() {
-        ringProgressDialog = ProgressDialog.show(LoginActivity.this, "Please wait ...", "", true);
-        ringProgressDialog.setCancelable(true);
+        ringProgressDialog = new ProgressDialog(LoginActivity.this);
+        ringProgressDialog.setMessage("Please wait...");
+        ringProgressDialog.setIndeterminate(true);
+        ringProgressDialog.setCancelable(false);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -78,25 +89,6 @@ public class LoginActivity extends AppCompatActivity {
         }).start();
         attemptLogin();
     }
-
-    public void launchRingDialog(View view) {
-        final ProgressDialog ringProgressDialog = ProgressDialog.show(LoginActivity.this, "Please wait ...", "", true);
-        ringProgressDialog.setCancelable(true);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // Here you should write your time consuming task...
-                    // Let the progress ring for 10 seconds...
-                    Thread.sleep(10000);
-                } catch (Exception e) {
-
-                }
-                ringProgressDialog.dismiss();
-            }
-        }).start();
-    }
-
 
     private void attemptLogin() {
         if (mAuthTask != null) {
@@ -167,6 +159,13 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
+        protected void onPreExecute() {
+            // Things to be done before execution of long running operation. For
+            // example showing ProgessDialog
+            ringProgressDialog.show();
+        }
+
+        @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
             boolean match = false;
@@ -196,11 +195,17 @@ public class LoginActivity extends AppCompatActivity {
             //showProgress(false);
             ringProgressDialog.dismiss();
             if (success) {
+                SharedPreferences.Editor editor = sharedPreference.edit();
+                editor.putString("EVALUATOR", mEmail);
                 if(mEmail.equalsIgnoreCase("admin")){
+                    editor.putString("USER", "admin");
                     startActivity(new Intent(getApplicationContext(), AdminDashboardActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }else{
-                    startActivity(new Intent(getApplicationContext(), ProjectsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+
+                    editor.putString("USER", "evaluator");
+                    startActivity(new Intent(getApplicationContext(), QuestionActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
+                editor.commit();
                 finish();
                 //Toast.makeText(getApplicationContext(),mEmail + " - " + mRoles,Toast.LENGTH_LONG).show();
             } else {

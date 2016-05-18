@@ -3,6 +3,19 @@
     <color name="colorPrimary">#2A92DB</color>
     <color name="colorPrimaryDark">#0063A6</color>
     <color name="colorAccent">#F57E20 </color>
+    <color name="black">#000000</color>
+
+    <color name="accountsColor">#7030a0</color>
+    <color name="cmtuvaColor">#ff6600</color>
+    <color name="ceoColor">#ff0000</color>
+    <color name="pmColor">#ffff00</color>
+    <color name="stpColor">#00b050</color>
+    <color name="prColor">#0070c0</color>
+    <color name="actgColor">#8db4e2</color>
+    <color name="hrColor">#00b0f0</color>
+    <color name="invColor">#6600ff</color>
+    <color name="rb_color1">#2a92db</color>
+    <color name="rb_color2">#757575</color>
 
     <!-- Material Colors -->
     <color name="red_500_primary">#f44336</color>

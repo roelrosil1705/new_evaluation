@@ -11,8 +11,8 @@ public class EmployeeModel extends RealmObject {
     @PrimaryKey
     private long id;
     private String name;
-    private String jobTitle;
-    private String role;
+    private String email;
+    private String department;
 
     public long getId() {
         return id;
@@ -30,19 +30,19 @@ public class EmployeeModel extends RealmObject {
         this.name = name;
     }
 
-    public String getJobTitle() {
-        return jobTitle;
+    public String getEmail() {
+        return email;
     }
 
-    public void setJobTitle(String jobTitle) {
-        this.jobTitle = jobTitle;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getRole() {
-        return role;
+    public String getDepartment() {
+        return department;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setDepartment(String department) {
+        this.department = department;
     }
 }
