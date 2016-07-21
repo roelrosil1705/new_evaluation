@@ -11,6 +11,100 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         >
+        <TextView
+            android:id="@+id/leadinfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="26dp"
+            android:textColor="#404040"
+            android:text="Team Leader's"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_marginRight="5dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="30dp"
+        android:paddingLeft="40dp"
+        >
+
+        <CheckBox
+            android:id="@+id/tck1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Henry Bryan Gasga"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#404040"
+            android:layout_marginBottom="5dp"
+            android:theme="@style/MyRadioButton"
+            android:visibility="gone"
+            android:contentDescription="sample"/>
+
+        <CheckBox
+            android:id="@+id/tck2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Henry Bryans Gasga"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#404040"
+            android:layout_marginBottom="5dp"
+            android:theme="@style/MyRadioButton"
+            android:visibility="gone"
+            android:contentDescription="sample"/>
+
+        <CheckBox
+            android:id="@+id/tck3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Henry Bryan Gasga"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#404040"
+            android:layout_marginBottom="5dp"
+            android:theme="@style/MyRadioButton"
+            android:visibility="gone"
+            android:contentDescription="sample"/>
+
+        <CheckBox
+            android:id="@+id/tck4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Henry Bryan Gasga"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#404040"
+            android:layout_marginBottom="5dp"
+            android:theme="@style/MyRadioButton"
+            android:visibility="gone"
+            android:contentDescription="sample"/>
+
+        <CheckBox
+            android:id="@+id/tck5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Henry Bryan Gasga"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#404040"
+            android:layout_marginBottom="5dp"
+            android:theme="@style/MyRadioButton"
+            android:visibility="gone"
+            android:contentDescription="sample"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
 
         <TextView
             android:id="@+id/questionHead_num"
@@ -73,7 +167,8 @@
             android:textColor="#404040"
             android:layout_marginBottom="5dp"
             android:theme="@style/MyRadioButton"
-            android:visibility="gone"/>
+            android:visibility="visible"
+            android:contentDescription="sample"/>
 
         <CheckBox
             android:id="@+id/ck2"
@@ -149,6 +244,29 @@
 
         <CheckBox
             android:id="@+id/ck8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Yes"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#404040"
+            android:layout_marginBottom="5dp"
+            android:theme="@style/MyRadioButton"
+            android:visibility="gone"/>
+        <CheckBox
+            android:id="@+id/ck9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Yes"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#404040"
+            android:layout_marginBottom="5dp"
+            android:theme="@style/MyRadioButton"
+            android:visibility="gone"/>
+
+        <CheckBox
+            android:id="@+id/ck10"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Yes"
@@ -269,6 +387,32 @@
 
             <RadioButton
                 android:id="@+id/rb8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                android:textColor="#404040"
+                android:layout_marginBottom="5dp"
+                android:theme="@style/MyRadioButton"
+                android:text="Yes"
+                android:visibility="gone"/>
+
+            <RadioButton
+                android:id="@+id/rb9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                android:textColor="#404040"
+                android:layout_marginBottom="5dp"
+                android:theme="@style/MyRadioButton"
+                android:text="Yes"
+                android:visibility="gone"/>
+
+            <RadioButton
+                android:id="@+id/rb10"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight=".5"

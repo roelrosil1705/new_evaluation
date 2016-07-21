@@ -65,12 +65,6 @@ public class EventsFragment extends Fragment {
         listEventModels = new ArrayList<EventModel>();
         eventAdapter = new EventsAdapter(listEventModels);
 
-        //Query for all the employee
-        RealmResults<EventModel> query = realm.where(EventModel.class).findAll();
-        query.sort("id", Sort.DESCENDING);
-        for(EventModel o : query) {
-            listEventModels.add(o);
-        }
         rvList.setAdapter(eventAdapter);
 
         return view;

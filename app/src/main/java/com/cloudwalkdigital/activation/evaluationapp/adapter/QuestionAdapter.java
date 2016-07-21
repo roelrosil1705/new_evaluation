@@ -15,7 +15,13 @@ import com.cloudwalkdigital.activation.evaluationapp.constant.Constant;
 import com.cloudwalkdigital.activation.evaluationapp.fragments.AccountsFragment_q1;
 import com.cloudwalkdigital.activation.evaluationapp.fragments.AccountsFragment_q2;
 import com.cloudwalkdigital.activation.evaluationapp.fragments.Choices3Fragment;
+import com.cloudwalkdigital.activation.evaluationapp.fragments.EventProperQsFragment;
+import com.cloudwalkdigital.activation.evaluationapp.fragments.PostEventQsFragment;
 import com.cloudwalkdigital.activation.evaluationapp.fragments.QuestionFragment;
+import com.cloudwalkdigital.activation.evaluationapp.models.QuestionModel;
+import com.cloudwalkdigital.activation.evaluationapp.utils.Globals;
+
+import java.util.List;
 
 /**
  * Created by henry on 02/05/2016.
@@ -23,15 +29,18 @@ import com.cloudwalkdigital.activation.evaluationapp.fragments.QuestionFragment;
 public class QuestionAdapter extends FragmentPagerAdapter {
 
     public static Context mContext;
+    List<QuestionModel> mQuestion;
 
     public static final String PREFS_NAME = "MyPref";
     public static SharedPreferences sharedPreference;
     SharedPreferences.Editor editor;
     String LOG_IN = "User";
+    Globals g = Globals.getInstance();
 
-    public String EVALUATOR = "AE";
-    public String DEPT_QUESTION = "Accounts";
-    public String EVENT_NAME = "DOVE EVENT";
+    public static String EVALUATOR = "AE";
+    public static String DEPT_QUESTION = "Account Executive";
+    public static String EVENT_NAME = "DOVE EVENT";
+    public static String EVENT_CAT = "DOVE EVENT";
 
     public QuestionAdapter(FragmentManager fm) {
         super(fm);
@@ -44,24 +53,11 @@ public class QuestionAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        LOG_IN = sharedPreference.getString("EVALUATOR", "");
-        switch(LOG_IN){
-            case "accounts": return QuestionFragment.newInstance(position,"accounts");
-            case "cmtuva": return Choices3Fragment.newInstance(position,"cmtuva");
-        }
-        return null;
-
+        return QuestionFragment.newInstance(position);
     }
 
     @Override
     public int getCount() {
-        LOG_IN = sharedPreference.getString("EVALUATOR", "");
-        switch(LOG_IN){
-            case "accounts":
-                return Constant.accountsQuestion.length;
-            case "cmtuva":
-                return Constant.accountsQuestion.length;
-        }
-        return 0;
+        return g.getQuestion().size();
     }
 }

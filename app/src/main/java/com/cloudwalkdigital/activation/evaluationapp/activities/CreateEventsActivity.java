@@ -105,28 +105,6 @@ public class CreateEventsActivity extends AppCompatActivity{
         String email = etJonum.getText().toString();
         String eDate = showMyDate.getText().toString();
 
-        //Add employee to realm database
-        realm.beginTransaction();
-        //EmployeeModel employeeModel = realm.createObject(EmployeeModel.class);
-        EventModel eventModel = new EventModel();
-        long key = 0;
-        if(eventModel.isValid()){
-            eventModel = new EventModel();
-        }else{
-            eventModel = realm.createObject(EventModel.class);
-        }
-        try {
-            key = realm.where(EventModel.class).max("id").longValue() + 1;
-        } catch (ArrayIndexOutOfBoundsException e) {
-            key = 0;
-        }
-        eventModel.setId(key);
-        eventModel.setName(name);
-        eventModel.setJonum(email);
-        eventModel.setEventdate(eDate);
-        realm.copyToRealm(eventModel);
-        realm.commitTransaction();
-
         Close();
     }
 

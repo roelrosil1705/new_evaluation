@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -21,6 +22,23 @@ import com.cloudwalkdigital.activation.evaluationapp.activities.AdminDashboardAc
 import com.cloudwalkdigital.activation.evaluationapp.activities.FinishActivity;
 import com.cloudwalkdigital.activation.evaluationapp.adapter.QuestionAdapter;
 import com.cloudwalkdigital.activation.evaluationapp.constant.Constant;
+import com.cloudwalkdigital.activation.evaluationapp.models.AnswerModel;
+import com.cloudwalkdigital.activation.evaluationapp.models.LeaderModel;
+import com.cloudwalkdigital.activation.evaluationapp.models.QuestionModel;
+import com.cloudwalkdigital.activation.evaluationapp.utils.DatabaseAccess;
+import com.cloudwalkdigital.activation.evaluationapp.utils.Globals;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -36,12 +54,15 @@ import butterknife.OnClick;
 public class QuestionFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_position = "param1";
+    private static final String ARG_LIST = "param2";
+    private List<QuestionModel> mQuestion;
 
     // TODO: Rename and change types of parameters
-    private int mParam1;
+    private int mPosition;
     private String mParam2;
+    public String quesId;
+    Globals g = Globals.getInstance();
 
     @Bind(R.id.choices1)            TextView choices1;
     @Bind(R.id.questionHead_num)    TextView qNum;
@@ -56,6 +77,8 @@ public class QuestionFragment extends Fragment {
     @Bind(R.id.rb6)                 RadioButton rb6;
     @Bind(R.id.rb7)                 RadioButton rb7;
     @Bind(R.id.rb8)                 RadioButton rb8;
+    @Bind(R.id.rb9)                 RadioButton rb9;
+    @Bind(R.id.rb10)                RadioButton rb10;
     @Bind(R.id.ck1)                 CheckBox ck1;
     @Bind(R.id.ck2)                 CheckBox ck2;
     @Bind(R.id.ck3)                 CheckBox ck3;
@@ -64,9 +87,18 @@ public class QuestionFragment extends Fragment {
     @Bind(R.id.ck6)                 CheckBox ck6;
     @Bind(R.id.ck7)                 CheckBox ck7;
     @Bind(R.id.ck8)                 CheckBox ck8;
+    @Bind(R.id.ck9)                 CheckBox ck9;
+    @Bind(R.id.ck10)                CheckBox ck10;
+    @Bind(R.id.leadinfo)            TextView leadinfo;
+    @Bind(R.id.tck1)                CheckBox tck1;
+    @Bind(R.id.tck2)                CheckBox tck2;
+    @Bind(R.id.tck3)                CheckBox tck3;
+    @Bind(R.id.tck4)                CheckBox tck4;
+    @Bind(R.id.tck5)                CheckBox tck5;
 
     public static final String PREFS_NAME = "MyPref";
     SharedPreferences sharedPreference;
+    DatabaseAccess databaseAccess;
     ViewPager vp;
 
     public QuestionFragment() {
@@ -77,16 +109,12 @@ public class QuestionFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment QuestionFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static QuestionFragment newInstance(int param1, String param2) {
+    public static QuestionFragment newInstance(int position) {
         QuestionFragment fragment = new QuestionFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(ARG_position, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -95,8 +123,7 @@ public class QuestionFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getInt(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mPosition = getArguments().getInt(ARG_position);
             sharedPreference = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         }
         vp = (ViewPager) getActivity().findViewById(R.id.vp_container);
@@ -108,201 +135,593 @@ public class QuestionFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.answer_sheet, container, false);
         ButterKnife.bind(this,v);
-        //layout
-        switch(Constant.accountsQuestion[mParam1][0][0][0]){
-            case "1":
+        List<AnswerModel> feedItemList;
+        List<LeaderModel> leadTeam = null;
+        List<String> asignleadteam;
+        int EVENTID = sharedPreference.getInt("EVENTID", 0);
+        int questionNum = mPosition + 1;
+        qNum.setText(questionNum + ".");
+        qLabel.setText(g.getQuestion().get(mPosition).getQuestion());
+        quesId = g.getQuestion().get(mPosition).getId()+"";
+        databaseAccess = DatabaseAccess.getInstance(getActivity());
+        databaseAccess.open();
+        feedItemList = databaseAccess.getAnswers(g.getQuestion().get(mPosition).getId()+"");
+        int layout = feedItemList.size();
+        int deptInfo = Integer.parseInt(g.getQuestion().get(mPosition).getQdept());
+        leadinfo.setVisibility(View.GONE);
+        if(deptInfo == 5 || deptInfo == 3) {
+            switch(deptInfo){
+                case 3:
+                    leadinfo.setVisibility(View.VISIBLE);
+                    leadinfo.setText("Select Negotiator's");
+                    asignleadteam = databaseAccess.getAssignLead(8,EVENTID);
+                    if(asignleadteam != null){
+                        leadTeam = databaseAccess.getLeaders(asignleadteam, "tblnegotiator");
+                    }
+                    break;
+                case 5:
+                    leadinfo.setVisibility(View.VISIBLE);
+                    leadinfo.setText("Select Team Leader's");
+                    asignleadteam = databaseAccess.getAssignLead(7,EVENTID);
+                    if(asignleadteam != null){
+                        leadTeam = databaseAccess.getLeaders(asignleadteam, "tblteamleader");
+                    }
+                    break;
+            }
+
+            switch (leadTeam.size()){
+                case 1:
+                    tck1.setVisibility(View.VISIBLE);
+                    tck1.setText(leadTeam.get(0).getFname()+" "+leadTeam.get(0).getLname());
+                    tck1.setContentDescription(leadTeam.get(0).getId()+"");
+                    break;
+                case 2:
+                    tck1.setVisibility(View.VISIBLE);
+                    tck2.setVisibility(View.VISIBLE);
+                    tck1.setText(leadTeam.get(0).getFname()+" "+leadTeam.get(0).getLname());
+                    tck2.setText(leadTeam.get(1).getFname()+" "+leadTeam.get(1).getLname());
+                    tck1.setContentDescription(leadTeam.get(0).getId()+"");
+                    tck2.setContentDescription(leadTeam.get(1).getId()+"");
+                    break;
+                case 3:
+                    tck1.setVisibility(View.VISIBLE);
+                    tck2.setVisibility(View.VISIBLE);
+                    tck3.setVisibility(View.VISIBLE);
+                    tck1.setText(leadTeam.get(0).getFname()+" "+leadTeam.get(0).getLname());
+                    tck2.setText(leadTeam.get(1).getFname()+" "+leadTeam.get(1).getLname());
+                    tck3.setText(leadTeam.get(2).getFname()+" "+leadTeam.get(2).getLname());
+                    tck1.setContentDescription(leadTeam.get(0).getId()+"");
+                    tck2.setContentDescription(leadTeam.get(1).getId()+"");
+                    tck3.setContentDescription(leadTeam.get(2).getId()+"");
+                    break;
+                case 4:
+                    tck1.setVisibility(View.VISIBLE);
+                    tck2.setVisibility(View.VISIBLE);
+                    tck3.setVisibility(View.VISIBLE);
+                    tck4.setVisibility(View.VISIBLE);
+                    tck1.setText(leadTeam.get(0).getFname()+" "+leadTeam.get(0).getLname());
+                    tck2.setText(leadTeam.get(1).getFname()+" "+leadTeam.get(1).getLname());
+                    tck3.setText(leadTeam.get(2).getFname()+" "+leadTeam.get(2).getLname());
+                    tck4.setText(leadTeam.get(3).getFname()+" "+leadTeam.get(3).getLname());
+                    tck1.setContentDescription(leadTeam.get(0).getId()+"");
+                    tck2.setContentDescription(leadTeam.get(1).getId()+"");
+                    tck3.setContentDescription(leadTeam.get(2).getId()+"");
+                    tck4.setContentDescription(leadTeam.get(3).getId()+"");
+                    break;
+                case 5:
+                    tck1.setVisibility(View.VISIBLE);
+                    tck2.setVisibility(View.VISIBLE);
+                    tck3.setVisibility(View.VISIBLE);
+                    tck4.setVisibility(View.VISIBLE);
+                    tck5.setVisibility(View.VISIBLE);
+                    tck1.setText(leadTeam.get(0).getFname()+" "+leadTeam.get(0).getLname());
+                    tck2.setText(leadTeam.get(1).getFname()+" "+leadTeam.get(1).getLname());
+                    tck3.setText(leadTeam.get(2).getFname()+" "+leadTeam.get(2).getLname());
+                    tck4.setText(leadTeam.get(3).getFname()+" "+leadTeam.get(3).getLname());
+                    tck5.setText(leadTeam.get(4).getFname()+" "+leadTeam.get(4).getLname());
+                    tck1.setContentDescription(leadTeam.get(0).getId()+"");
+                    tck2.setContentDescription(leadTeam.get(1).getId()+"");
+                    tck3.setContentDescription(leadTeam.get(2).getId()+"");
+                    tck4.setContentDescription(leadTeam.get(3).getId()+"");
+                    tck5.setContentDescription(leadTeam.get(4).getId()+"");
+                    break;
+            }
+        }
+        databaseAccess.close();
+        choices1.setText(g.getQuestion().get(mPosition).getQsub());
+        switch(layout){
+            case 1:
                 llSingle.setVisibility(View.VISIBLE);
                 rb1.setVisibility(View.VISIBLE);
                 rb2.setVisibility(View.VISIBLE);
                 choices1.setVisibility(View.VISIBLE);
+                rb1.setText(feedItemList.get(0).getContent());
+                rb2.setText(feedItemList.get(1).getContent());
+                rb1.setContentDescription(feedItemList.get(0).getId()+"");
+                rb2.setContentDescription(feedItemList.get(1).getId()+"");
+                //choices1.setText(Constant.accountsQuestion[mParam1][2][0][0]);
                 break;
-            case "2":
-                llMultiple.setVisibility(View.VISIBLE);
-                ck1.setVisibility(View.VISIBLE);
-                ck2.setVisibility(View.VISIBLE);
+            case 2:
+                if(g.getQuestion().get(mPosition).getQtype().equalsIgnoreCase("M")){
+                    llMultiple.setVisibility(View.VISIBLE);
+                    ck1.setVisibility(View.VISIBLE);
+                    ck2.setVisibility(View.VISIBLE);
+                    ck1.setText(feedItemList.get(0).getContent());
+                    ck2.setText(feedItemList.get(1).getContent());
+                    ck1.setContentDescription(feedItemList.get(0).getId()+"");
+                    ck2.setContentDescription(feedItemList.get(1).getId()+"");
+                }else{
+                    llSingle.setVisibility(View.VISIBLE);
+                    rb1.setVisibility(View.VISIBLE);
+                    rb2.setVisibility(View.VISIBLE);
+                    rb1.setText(feedItemList.get(0).getContent());
+                    rb2.setText(feedItemList.get(1).getContent());
+                    rb1.setContentDescription(feedItemList.get(0).getId()+"");
+                    rb2.setContentDescription(feedItemList.get(1).getId()+"");
+                }
                 break;
-            case "3":
-                llMultiple.setVisibility(View.VISIBLE);
-                ck1.setVisibility(View.VISIBLE);
-                ck2.setVisibility(View.VISIBLE);
-                ck3.setVisibility(View.VISIBLE);
+            case 3:
+                if(g.getQuestion().get(mPosition).getQtype().equalsIgnoreCase("M")){
+                    llMultiple.setVisibility(View.VISIBLE);
+                    ck1.setVisibility(View.VISIBLE);
+                    ck2.setVisibility(View.VISIBLE);
+                    ck3.setVisibility(View.VISIBLE);
+                    ck1.setText(feedItemList.get(0).getContent());
+                    ck2.setText(feedItemList.get(1).getContent());
+                    ck3.setText(feedItemList.get(2).getContent());
+                    ck1.setContentDescription(feedItemList.get(0).getId()+"");
+                    ck2.setContentDescription(feedItemList.get(1).getId()+"");
+                    ck3.setContentDescription(feedItemList.get(2).getId()+"");
+                }else{
+                    llSingle.setVisibility(View.VISIBLE);
+                    rb1.setVisibility(View.VISIBLE);
+                    rb2.setVisibility(View.VISIBLE);
+                    rb3.setVisibility(View.VISIBLE);
+                    rb1.setText(feedItemList.get(0).getContent());
+                    rb2.setText(feedItemList.get(1).getContent());
+                    rb3.setText(feedItemList.get(2).getContent());
+                    rb1.setContentDescription(feedItemList.get(0).getId()+"");
+                    rb2.setContentDescription(feedItemList.get(1).getId()+"");
+                    rb3.setContentDescription(feedItemList.get(2).getId()+"");
+                }
                 break;
-            case "4":
-                llMultiple.setVisibility(View.VISIBLE);
-                ck1.setVisibility(View.VISIBLE);
-                ck2.setVisibility(View.VISIBLE);
-                ck3.setVisibility(View.VISIBLE);
-                ck4.setVisibility(View.VISIBLE);
+            case 4:
+                if(g.getQuestion().get(mPosition).getQtype().equalsIgnoreCase("M")){
+                    llMultiple.setVisibility(View.VISIBLE);
+                    ck1.setVisibility(View.VISIBLE);
+                    ck2.setVisibility(View.VISIBLE);
+                    ck3.setVisibility(View.VISIBLE);
+                    ck4.setVisibility(View.VISIBLE);
+                    ck1.setText(feedItemList.get(0).getContent());
+                    ck2.setText(feedItemList.get(1).getContent());
+                    ck3.setText(feedItemList.get(2).getContent());
+                    ck4.setText(feedItemList.get(3).getContent());
+                    ck1.setContentDescription(feedItemList.get(0).getId()+"");
+                    ck2.setContentDescription(feedItemList.get(1).getId()+"");
+                    ck3.setContentDescription(feedItemList.get(2).getId()+"");
+                    ck4.setContentDescription(feedItemList.get(3).getId()+"");
+                }else{
+                    llSingle.setVisibility(View.VISIBLE);
+                    rb1.setVisibility(View.VISIBLE);
+                    rb2.setVisibility(View.VISIBLE);
+                    rb3.setVisibility(View.VISIBLE);
+                    rb4.setVisibility(View.VISIBLE);
+                    rb1.setText(feedItemList.get(0).getContent());
+                    rb2.setText(feedItemList.get(1).getContent());
+                    rb3.setText(feedItemList.get(2).getContent());
+                    rb4.setText(feedItemList.get(3).getContent());
+                    rb1.setContentDescription(feedItemList.get(0).getId()+"");
+                    rb2.setContentDescription(feedItemList.get(1).getId()+"");
+                    rb3.setContentDescription(feedItemList.get(2).getId()+"");
+                    rb4.setContentDescription(feedItemList.get(3).getId()+"");
+                }
                 break;
-            case "5":
-                llMultiple.setVisibility(View.VISIBLE);
-                ck1.setVisibility(View.VISIBLE);
-                ck2.setVisibility(View.VISIBLE);
-                ck3.setVisibility(View.VISIBLE);
-                ck4.setVisibility(View.VISIBLE);
-                ck5.setVisibility(View.VISIBLE);
+            case 5:
+                if(g.getQuestion().get(mPosition).getQtype().equalsIgnoreCase("M")){
+                    llMultiple.setVisibility(View.VISIBLE);
+                    ck1.setVisibility(View.VISIBLE);
+                    ck2.setVisibility(View.VISIBLE);
+                    ck3.setVisibility(View.VISIBLE);
+                    ck4.setVisibility(View.VISIBLE);
+                    ck5.setVisibility(View.VISIBLE);
+                    ck1.setText(feedItemList.get(0).getContent());
+                    ck2.setText(feedItemList.get(1).getContent());
+                    ck3.setText(feedItemList.get(2).getContent());
+                    ck4.setText(feedItemList.get(3).getContent());
+                    ck5.setText(feedItemList.get(4).getContent());
+                    ck1.setContentDescription(feedItemList.get(0).getId()+"");
+                    ck2.setContentDescription(feedItemList.get(1).getId()+"");
+                    ck3.setContentDescription(feedItemList.get(2).getId()+"");
+                    ck4.setContentDescription(feedItemList.get(3).getId()+"");
+                    ck5.setContentDescription(feedItemList.get(4).getId()+"");
+                }else{
+                    llSingle.setVisibility(View.VISIBLE);
+                    rb1.setVisibility(View.VISIBLE);
+                    rb2.setVisibility(View.VISIBLE);
+                    rb3.setVisibility(View.VISIBLE);
+                    rb4.setVisibility(View.VISIBLE);
+                    rb5.setVisibility(View.VISIBLE);
+                    rb1.setText(feedItemList.get(0).getContent());
+                    rb2.setText(feedItemList.get(1).getContent());
+                    rb3.setText(feedItemList.get(2).getContent());
+                    rb4.setText(feedItemList.get(3).getContent());
+                    rb5.setText(feedItemList.get(4).getContent());
+                    rb1.setContentDescription(feedItemList.get(0).getId()+"");
+                    rb2.setContentDescription(feedItemList.get(1).getId()+"");
+                    rb3.setContentDescription(feedItemList.get(2).getId()+"");
+                    rb4.setContentDescription(feedItemList.get(3).getId()+"");
+                    rb5.setContentDescription(feedItemList.get(4).getId()+"");
+                }
                 break;
-            case "6":
-                llMultiple.setVisibility(View.VISIBLE);
-                ck1.setVisibility(View.VISIBLE);
-                ck2.setVisibility(View.VISIBLE);
-                ck3.setVisibility(View.VISIBLE);
-                ck4.setVisibility(View.VISIBLE);
-                ck5.setVisibility(View.VISIBLE);
-                ck6.setVisibility(View.VISIBLE);
+            case 6:
+                if(g.getQuestion().get(mPosition).getQtype().equalsIgnoreCase("M")){
+                    llMultiple.setVisibility(View.VISIBLE);
+                    ck1.setVisibility(View.VISIBLE);
+                    ck2.setVisibility(View.VISIBLE);
+                    ck3.setVisibility(View.VISIBLE);
+                    ck4.setVisibility(View.VISIBLE);
+                    ck5.setVisibility(View.VISIBLE);
+                    ck6.setVisibility(View.VISIBLE);
+                    ck1.setText(feedItemList.get(0).getContent());
+                    ck2.setText(feedItemList.get(1).getContent());
+                    ck3.setText(feedItemList.get(2).getContent());
+                    ck4.setText(feedItemList.get(3).getContent());
+                    ck5.setText(feedItemList.get(4).getContent());
+                    ck6.setText(feedItemList.get(5).getContent());
+                    ck1.setContentDescription(feedItemList.get(0).getId()+"");
+                    ck2.setContentDescription(feedItemList.get(1).getId()+"");
+                    ck3.setContentDescription(feedItemList.get(2).getId()+"");
+                    ck4.setContentDescription(feedItemList.get(3).getId()+"");
+                    ck5.setContentDescription(feedItemList.get(4).getId()+"");
+                    ck6.setContentDescription(feedItemList.get(5).getId()+"");
+                }else{
+                    llSingle.setVisibility(View.VISIBLE);
+                    rb1.setVisibility(View.VISIBLE);
+                    rb2.setVisibility(View.VISIBLE);
+                    rb3.setVisibility(View.VISIBLE);
+                    rb4.setVisibility(View.VISIBLE);
+                    rb5.setVisibility(View.VISIBLE);
+                    rb6.setVisibility(View.VISIBLE);
+                    rb1.setText(feedItemList.get(0).getContent());
+                    rb2.setText(feedItemList.get(1).getContent());
+                    rb3.setText(feedItemList.get(2).getContent());
+                    rb4.setText(feedItemList.get(3).getContent());
+                    rb5.setText(feedItemList.get(4).getContent());
+                    rb6.setText(feedItemList.get(5).getContent());
+                    rb1.setContentDescription(feedItemList.get(0).getId()+"");
+                    rb2.setContentDescription(feedItemList.get(1).getId()+"");
+                    rb3.setContentDescription(feedItemList.get(2).getId()+"");
+                    rb4.setContentDescription(feedItemList.get(3).getId()+"");
+                    rb5.setContentDescription(feedItemList.get(4).getId()+"");
+                    rb6.setContentDescription(feedItemList.get(5).getId()+"");
+                }
                 break;
-            case "7":
-                llMultiple.setVisibility(View.VISIBLE);
-                ck1.setVisibility(View.VISIBLE);
-                ck2.setVisibility(View.VISIBLE);
-                ck3.setVisibility(View.VISIBLE);
-                ck4.setVisibility(View.VISIBLE);
-                ck5.setVisibility(View.VISIBLE);
-                ck6.setVisibility(View.VISIBLE);
-                ck7.setVisibility(View.VISIBLE);
+            case 7:
+                if(g.getQuestion().get(mPosition).getQtype().equalsIgnoreCase("M")){
+                    llMultiple.setVisibility(View.VISIBLE);
+                    ck1.setVisibility(View.VISIBLE);
+                    ck2.setVisibility(View.VISIBLE);
+                    ck3.setVisibility(View.VISIBLE);
+                    ck4.setVisibility(View.VISIBLE);
+                    ck5.setVisibility(View.VISIBLE);
+                    ck6.setVisibility(View.VISIBLE);
+                    ck7.setVisibility(View.VISIBLE);
+                    ck1.setText(feedItemList.get(0).getContent());
+                    ck2.setText(feedItemList.get(1).getContent());
+                    ck3.setText(feedItemList.get(2).getContent());
+                    ck4.setText(feedItemList.get(3).getContent());
+                    ck5.setText(feedItemList.get(4).getContent());
+                    ck6.setText(feedItemList.get(5).getContent());
+                    ck7.setText(feedItemList.get(6).getContent());
+                    ck1.setContentDescription(feedItemList.get(0).getId()+"");
+                    ck2.setContentDescription(feedItemList.get(1).getId()+"");
+                    ck3.setContentDescription(feedItemList.get(2).getId()+"");
+                    ck4.setContentDescription(feedItemList.get(3).getId()+"");
+                    ck5.setContentDescription(feedItemList.get(4).getId()+"");
+                    ck6.setContentDescription(feedItemList.get(5).getId()+"");
+                    ck7.setContentDescription(feedItemList.get(6).getId()+"");
+                }else{
+                    llSingle.setVisibility(View.VISIBLE);
+                    rb1.setVisibility(View.VISIBLE);
+                    rb2.setVisibility(View.VISIBLE);
+                    rb3.setVisibility(View.VISIBLE);
+                    rb4.setVisibility(View.VISIBLE);
+                    rb5.setVisibility(View.VISIBLE);
+                    rb6.setVisibility(View.VISIBLE);
+                    rb7.setVisibility(View.VISIBLE);
+                    rb1.setText(feedItemList.get(0).getContent());
+                    rb2.setText(feedItemList.get(1).getContent());
+                    rb3.setText(feedItemList.get(2).getContent());
+                    rb4.setText(feedItemList.get(3).getContent());
+                    rb5.setText(feedItemList.get(4).getContent());
+                    rb6.setText(feedItemList.get(5).getContent());
+                    rb7.setText(feedItemList.get(6).getContent());
+                    rb1.setContentDescription(feedItemList.get(0).getId()+"");
+                    rb2.setContentDescription(feedItemList.get(1).getId()+"");
+                    rb3.setContentDescription(feedItemList.get(2).getId()+"");
+                    rb4.setContentDescription(feedItemList.get(3).getId()+"");
+                    rb5.setContentDescription(feedItemList.get(4).getId()+"");
+                    rb6.setContentDescription(feedItemList.get(5).getId()+"");
+                    rb7.setContentDescription(feedItemList.get(6).getId()+"");
+                }
                 break;
-            case "8":
-                llMultiple.setVisibility(View.VISIBLE);
-                ck1.setVisibility(View.VISIBLE);
-                ck2.setVisibility(View.VISIBLE);
-                ck3.setVisibility(View.VISIBLE);
-                ck4.setVisibility(View.VISIBLE);
-                ck5.setVisibility(View.VISIBLE);
-                ck6.setVisibility(View.VISIBLE);
-                ck7.setVisibility(View.VISIBLE);
-                ck8.setVisibility(View.VISIBLE);
+            case 8:
+                if(g.getQuestion().get(mPosition).getQtype().equalsIgnoreCase("M")){
+                    llMultiple.setVisibility(View.VISIBLE);
+                    ck1.setVisibility(View.VISIBLE);
+                    ck2.setVisibility(View.VISIBLE);
+                    ck3.setVisibility(View.VISIBLE);
+                    ck4.setVisibility(View.VISIBLE);
+                    ck5.setVisibility(View.VISIBLE);
+                    ck6.setVisibility(View.VISIBLE);
+                    ck7.setVisibility(View.VISIBLE);
+                    ck8.setVisibility(View.VISIBLE);
+                    ck1.setText(feedItemList.get(0).getContent());
+                    ck2.setText(feedItemList.get(1).getContent());
+                    ck3.setText(feedItemList.get(2).getContent());
+                    ck4.setText(feedItemList.get(3).getContent());
+                    ck5.setText(feedItemList.get(4).getContent());
+                    ck6.setText(feedItemList.get(5).getContent());
+                    ck7.setText(feedItemList.get(6).getContent());
+                    ck8.setText(feedItemList.get(7).getContent());
+                    ck1.setContentDescription(feedItemList.get(0).getId()+"");
+                    ck2.setContentDescription(feedItemList.get(1).getId()+"");
+                    ck3.setContentDescription(feedItemList.get(2).getId()+"");
+                    ck4.setContentDescription(feedItemList.get(3).getId()+"");
+                    ck5.setContentDescription(feedItemList.get(4).getId()+"");
+                    ck6.setContentDescription(feedItemList.get(5).getId()+"");
+                    ck7.setContentDescription(feedItemList.get(6).getId()+"");
+                    ck8.setContentDescription(feedItemList.get(7).getId()+"");
+                }else{
+                    llSingle.setVisibility(View.VISIBLE);
+                    rb1.setVisibility(View.VISIBLE);
+                    rb2.setVisibility(View.VISIBLE);
+                    rb3.setVisibility(View.VISIBLE);
+                    rb4.setVisibility(View.VISIBLE);
+                    rb5.setVisibility(View.VISIBLE);
+                    rb6.setVisibility(View.VISIBLE);
+                    rb7.setVisibility(View.VISIBLE);
+                    rb8.setVisibility(View.VISIBLE);
+                    rb1.setText(feedItemList.get(0).getContent());
+                    rb2.setText(feedItemList.get(1).getContent());
+                    rb3.setText(feedItemList.get(2).getContent());
+                    rb4.setText(feedItemList.get(3).getContent());
+                    rb5.setText(feedItemList.get(4).getContent());
+                    rb6.setText(feedItemList.get(5).getContent());
+                    rb7.setText(feedItemList.get(6).getContent());
+                    rb8.setText(feedItemList.get(7).getContent());
+                    rb1.setContentDescription(feedItemList.get(0).getId()+"");
+                    rb2.setContentDescription(feedItemList.get(1).getId()+"");
+                    rb3.setContentDescription(feedItemList.get(2).getId()+"");
+                    rb4.setContentDescription(feedItemList.get(3).getId()+"");
+                    rb5.setContentDescription(feedItemList.get(4).getId()+"");
+                    rb6.setContentDescription(feedItemList.get(5).getId()+"");
+                    rb7.setContentDescription(feedItemList.get(6).getId()+"");
+                    rb8.setContentDescription(feedItemList.get(7).getId()+"");
+                }
                 break;
-        }
-        int questionNum = mParam1 + 1;
-        int layout = Integer.parseInt(Constant.accountsQuestion[mParam1][0][0][0]);
-        switch(mParam2){
-            case "accounts":
-                qNum.setText(questionNum + ".");
-                qLabel.setText(Constant.accountsQuestion[mParam1][1][0][0]);
-                switch(layout){
-                    case 1:
-                        rb1.setText("Yes");
-                        rb2.setText("No");
-                        choices1.setText(Constant.accountsQuestion[mParam1][2][0][0]);
-                        break;
-                    case 2:
-                        ck1.setText(Constant.accountsQuestion[mParam1][2][0][0]);
-                        ck2.setText(Constant.accountsQuestion[mParam1][2][1][0]);
-                        break;
-                    case 3:
-                        ck1.setText(Constant.accountsQuestion[mParam1][2][0][0]);
-                        ck2.setText(Constant.accountsQuestion[mParam1][2][1][0]);
-                        ck3.setText(Constant.accountsQuestion[mParam1][2][2][0]);
-                        break;
-                    case 4:
-                        ck1.setText(Constant.accountsQuestion[mParam1][2][0][0]);
-                        ck2.setText(Constant.accountsQuestion[mParam1][2][1][0]);
-                        ck3.setText(Constant.accountsQuestion[mParam1][2][2][0]);
-                        ck4.setText(Constant.accountsQuestion[mParam1][2][3][0]);
-                        break;
-                    case 5:
-                        ck1.setText(Constant.accountsQuestion[mParam1][2][0][0]);
-                        ck2.setText(Constant.accountsQuestion[mParam1][2][1][0]);
-                        ck3.setText(Constant.accountsQuestion[mParam1][2][2][0]);
-                        ck4.setText(Constant.accountsQuestion[mParam1][2][3][0]);
-                        ck5.setText(Constant.accountsQuestion[mParam1][2][4][0]);
-                        break;
-                    case 6:
-                        ck1.setText(Constant.accountsQuestion[mParam1][2][0][0]);
-                        ck2.setText(Constant.accountsQuestion[mParam1][2][1][0]);
-                        ck3.setText(Constant.accountsQuestion[mParam1][2][2][0]);
-                        ck4.setText(Constant.accountsQuestion[mParam1][2][3][0]);
-                        ck5.setText(Constant.accountsQuestion[mParam1][2][4][0]);
-                        ck6.setText(Constant.accountsQuestion[mParam1][2][5][0]);
-                        break;
-                    case 7:
-                        ck1.setText(Constant.accountsQuestion[mParam1][2][0][0]);
-                        ck2.setText(Constant.accountsQuestion[mParam1][2][1][0]);
-                        ck3.setText(Constant.accountsQuestion[mParam1][2][2][0]);
-                        ck4.setText(Constant.accountsQuestion[mParam1][2][3][0]);
-                        ck5.setText(Constant.accountsQuestion[mParam1][2][4][0]);
-                        ck6.setText(Constant.accountsQuestion[mParam1][2][5][0]);
-                        ck7.setText(Constant.accountsQuestion[mParam1][2][6][0]);
-                        break;
-                    case 8:
-                        ck1.setText(Constant.accountsQuestion[mParam1][2][0][0]);
-                        ck2.setText(Constant.accountsQuestion[mParam1][2][1][0]);
-                        ck3.setText(Constant.accountsQuestion[mParam1][2][2][0]);
-                        ck4.setText(Constant.accountsQuestion[mParam1][2][3][0]);
-                        ck5.setText(Constant.accountsQuestion[mParam1][2][4][0]);
-                        ck6.setText(Constant.accountsQuestion[mParam1][2][5][0]);
-                        ck7.setText(Constant.accountsQuestion[mParam1][2][6][0]);
-                        ck8.setText(Constant.accountsQuestion[mParam1][2][7][0]);
-                        break;
+            case 9:
+                if(g.getQuestion().get(mPosition).getQtype().equalsIgnoreCase("M")){
+                    llMultiple.setVisibility(View.VISIBLE);
+                    ck1.setVisibility(View.VISIBLE);
+                    ck2.setVisibility(View.VISIBLE);
+                    ck3.setVisibility(View.VISIBLE);
+                    ck4.setVisibility(View.VISIBLE);
+                    ck5.setVisibility(View.VISIBLE);
+                    ck6.setVisibility(View.VISIBLE);
+                    ck7.setVisibility(View.VISIBLE);
+                    ck8.setVisibility(View.VISIBLE);
+                    ck9.setVisibility(View.VISIBLE);
+                    ck1.setText(feedItemList.get(0).getContent());
+                    ck2.setText(feedItemList.get(1).getContent());
+                    ck3.setText(feedItemList.get(2).getContent());
+                    ck4.setText(feedItemList.get(3).getContent());
+                    ck5.setText(feedItemList.get(4).getContent());
+                    ck6.setText(feedItemList.get(5).getContent());
+                    ck7.setText(feedItemList.get(6).getContent());
+                    ck8.setText(feedItemList.get(7).getContent());
+                    ck9.setText(feedItemList.get(8).getContent());
+                    ck1.setContentDescription(feedItemList.get(0).getId()+"");
+                    ck2.setContentDescription(feedItemList.get(1).getId()+"");
+                    ck3.setContentDescription(feedItemList.get(2).getId()+"");
+                    ck4.setContentDescription(feedItemList.get(3).getId()+"");
+                    ck5.setContentDescription(feedItemList.get(4).getId()+"");
+                    ck6.setContentDescription(feedItemList.get(5).getId()+"");
+                    ck7.setContentDescription(feedItemList.get(6).getId()+"");
+                    ck8.setContentDescription(feedItemList.get(7).getId()+"");
+                    ck9.setContentDescription(feedItemList.get(8).getId()+"");
+                }else{
+                    llSingle.setVisibility(View.VISIBLE);
+                    rb1.setVisibility(View.VISIBLE);
+                    rb2.setVisibility(View.VISIBLE);
+                    rb3.setVisibility(View.VISIBLE);
+                    rb4.setVisibility(View.VISIBLE);
+                    rb5.setVisibility(View.VISIBLE);
+                    rb6.setVisibility(View.VISIBLE);
+                    rb7.setVisibility(View.VISIBLE);
+                    rb8.setVisibility(View.VISIBLE);
+                    rb9.setVisibility(View.VISIBLE);
+                    rb1.setText(feedItemList.get(0).getContent());
+                    rb2.setText(feedItemList.get(1).getContent());
+                    rb3.setText(feedItemList.get(2).getContent());
+                    rb4.setText(feedItemList.get(3).getContent());
+                    rb5.setText(feedItemList.get(4).getContent());
+                    rb6.setText(feedItemList.get(5).getContent());
+                    rb7.setText(feedItemList.get(6).getContent());
+                    rb8.setText(feedItemList.get(7).getContent());
+                    rb9.setText(feedItemList.get(8).getContent());
+                    rb1.setContentDescription(feedItemList.get(0).getId()+"");
+                    rb2.setContentDescription(feedItemList.get(1).getId()+"");
+                    rb3.setContentDescription(feedItemList.get(2).getId()+"");
+                    rb4.setContentDescription(feedItemList.get(3).getId()+"");
+                    rb5.setContentDescription(feedItemList.get(4).getId()+"");
+                    rb6.setContentDescription(feedItemList.get(5).getId()+"");
+                    rb7.setContentDescription(feedItemList.get(6).getId()+"");
+                    rb8.setContentDescription(feedItemList.get(7).getId()+"");
+                    rb9.setContentDescription(feedItemList.get(8).getId()+"");
+                }
+                break;
+            case 10:
+                if(g.getQuestion().get(mPosition).getQtype().equalsIgnoreCase("M")){
+                    llMultiple.setVisibility(View.VISIBLE);
+                    ck1.setVisibility(View.VISIBLE);
+                    ck2.setVisibility(View.VISIBLE);
+                    ck3.setVisibility(View.VISIBLE);
+                    ck4.setVisibility(View.VISIBLE);
+                    ck5.setVisibility(View.VISIBLE);
+                    ck6.setVisibility(View.VISIBLE);
+                    ck7.setVisibility(View.VISIBLE);
+                    ck8.setVisibility(View.VISIBLE);
+                    ck9.setVisibility(View.VISIBLE);
+                    ck10.setVisibility(View.VISIBLE);
+                    ck1.setText(feedItemList.get(0).getContent());
+                    ck2.setText(feedItemList.get(1).getContent());
+                    ck3.setText(feedItemList.get(2).getContent());
+                    ck4.setText(feedItemList.get(3).getContent());
+                    ck5.setText(feedItemList.get(4).getContent());
+                    ck6.setText(feedItemList.get(5).getContent());
+                    ck7.setText(feedItemList.get(6).getContent());
+                    ck8.setText(feedItemList.get(7).getContent());
+                    ck9.setText(feedItemList.get(8).getContent());
+                    ck10.setText(feedItemList.get(9).getContent());
+                    ck1.setContentDescription(feedItemList.get(0).getId()+"");
+                    ck2.setContentDescription(feedItemList.get(1).getId()+"");
+                    ck3.setContentDescription(feedItemList.get(2).getId()+"");
+                    ck4.setContentDescription(feedItemList.get(3).getId()+"");
+                    ck5.setContentDescription(feedItemList.get(4).getId()+"");
+                    ck6.setContentDescription(feedItemList.get(5).getId()+"");
+                    ck7.setContentDescription(feedItemList.get(6).getId()+"");
+                    ck8.setContentDescription(feedItemList.get(7).getId()+"");
+                    ck9.setContentDescription(feedItemList.get(8).getId()+"");
+                    ck10.setContentDescription(feedItemList.get(9).getId()+"");
+                }else{
+                    llSingle.setVisibility(View.VISIBLE);
+                    rb1.setVisibility(View.VISIBLE);
+                    rb2.setVisibility(View.VISIBLE);
+                    rb3.setVisibility(View.VISIBLE);
+                    rb4.setVisibility(View.VISIBLE);
+                    rb5.setVisibility(View.VISIBLE);
+                    rb6.setVisibility(View.VISIBLE);
+                    rb7.setVisibility(View.VISIBLE);
+                    rb8.setVisibility(View.VISIBLE);
+                    rb9.setVisibility(View.VISIBLE);
+                    rb10.setVisibility(View.VISIBLE);
+                    rb1.setText(feedItemList.get(0).getContent());
+                    rb2.setText(feedItemList.get(1).getContent());
+                    rb3.setText(feedItemList.get(2).getContent());
+                    rb4.setText(feedItemList.get(3).getContent());
+                    rb5.setText(feedItemList.get(4).getContent());
+                    rb6.setText(feedItemList.get(5).getContent());
+                    rb7.setText(feedItemList.get(6).getContent());
+                    rb8.setText(feedItemList.get(7).getContent());
+                    rb9.setText(feedItemList.get(8).getContent());
+                    rb10.setText(feedItemList.get(9).getContent());
+                    rb1.setContentDescription(feedItemList.get(0).getId()+"");
+                    rb2.setContentDescription(feedItemList.get(1).getId()+"");
+                    rb3.setContentDescription(feedItemList.get(2).getId()+"");
+                    rb4.setContentDescription(feedItemList.get(3).getId()+"");
+                    rb5.setContentDescription(feedItemList.get(4).getId()+"");
+                    rb6.setContentDescription(feedItemList.get(5).getId()+"");
+                    rb7.setContentDescription(feedItemList.get(6).getId()+"");
+                    rb8.setContentDescription(feedItemList.get(7).getId()+"");
+                    rb9.setContentDescription(feedItemList.get(8).getId()+"");
+                    rb10.setContentDescription(feedItemList.get(9).getId()+"");
                 }
                 break;
         }
         return v;
     }
 
-    @OnClick({R.id.rb1,R.id.rb2,R.id.rb3,R.id.rb4,R.id.rb5,R.id.rb6,R.id.rb7,R.id.rb8,R.id.ck1,R.id.ck2,R.id.ck3,R.id.ck4,R.id.ck5,R.id.ck6,R.id.ck7,R.id.ck8})
+    @OnClick({R.id.ck1,R.id.ck2,R.id.ck3,R.id.ck4,R.id.ck5,R.id.ck6,R.id.ck7,R.id.ck8,R.id.ck9,R.id.ck10})
     public void getAnswer(View v){
-        int questionNum = mParam1 + 1;
+        int questionNumMax = mPosition + 1;
+        String ansNum = "";
         SharedPreferences.Editor editor = sharedPreference.edit();
         int currentPage = vp.getCurrentItem() + 1;
+        int EVENTID = sharedPreference.getInt("EVENTID", 0);
+        String EVENTCATEGORY = sharedPreference.getString("EVENTCATEGORY", "");
+        databaseAccess = DatabaseAccess.getInstance(getActivity());
+        databaseAccess.open();
+        CheckBox chk = (CheckBox) v;
+        if(chk.isChecked()){
+            databaseAccess.saveAnswer(g.getEmployee().getId()+"",EVENTCATEGORY,quesId,EVENTID+"",v.getContentDescription().toString());
+//            Toast.makeText(getContext(),"CHK Selected",Toast.LENGTH_SHORT).show();
+        }
+        databaseAccess.close();
+        boolean movePage = true;
         switch(v.getId()){
-            case R.id.rb1:
-                editor.putInt("a"+questionNum, 1);
-                break;
-            case R.id.rb2:
-                editor.putInt("a"+questionNum, 2);
-                break;
-            case R.id.rb3:
-                editor.putInt("a"+questionNum, 3);
-                break;
-            case R.id.rb4:
-                editor.putInt("a"+questionNum, 4);
-                break;
-            case R.id.rb5:
-                editor.putInt("a"+questionNum, 5);
-                break;
-            case R.id.rb6:
-                editor.putInt("a"+questionNum, 6);
-                break;
-            case R.id.rb7:
-                editor.putInt("a"+questionNum, 7);
-                break;
-            case R.id.rb8:
-                editor.putInt("a"+questionNum, 8);
-                break;
             case R.id.ck1:
-                editor.putInt("a"+questionNum, 1);
+                movePage = false;
                 break;
             case R.id.ck2:
-                editor.putInt("a"+questionNum, 2);
+                movePage = false;
                 break;
             case R.id.ck3:
-                editor.putInt("a"+questionNum, 3);
+                movePage = false;
                 break;
             case R.id.ck4:
-                editor.putInt("a"+questionNum, 4);
+                movePage = false;
                 break;
             case R.id.ck5:
-                editor.putInt("a"+questionNum, 5);
+                movePage = false;
                 break;
             case R.id.ck6:
-                editor.putInt("a"+questionNum, 6);
+                movePage = false;
                 break;
             case R.id.ck7:
-                editor.putInt("a"+questionNum, 7);
+                movePage = false;
                 break;
             case R.id.ck8:
-                editor.putInt("a"+questionNum, 8);
+                movePage = false;
+                break;
+            case R.id.ck9:
+                movePage = false;
                 break;
         }
         editor.commit();
         if(vp.getCurrentItem() <= vp.getAdapter().getCount()){
-            vp.setCurrentItem(currentPage);
+            if(movePage){
+                vp.setCurrentItem(currentPage);
+            }
         }
-        if(questionNum == vp.getAdapter().getCount()){
-            startActivity(new Intent(getActivity(), FinishActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
-            getActivity().finish();
+        if(questionNumMax == vp.getAdapter().getCount()){
+            if(movePage){
+                startActivity(new Intent(getActivity(), FinishActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                getActivity().finish();
+            }
+        }
+    }
+
+    @OnClick({R.id.rb1,R.id.rb2,R.id.rb3,R.id.rb4,R.id.rb5,R.id.rb6,R.id.rb7,R.id.rb8,R.id.rb9,R.id.rb10})
+    public void getAnswerRadio(View v){
+        int questionNumMax = mPosition + 1;
+        String ansNum = "";
+        SharedPreferences.Editor editor = sharedPreference.edit();
+        int currentPage = vp.getCurrentItem() + 1;
+        int EVENTID = sharedPreference.getInt("EVENTID", 0);
+        String EVENTCATEGORY = sharedPreference.getString("EVENTCATEGORY", "");
+        databaseAccess = DatabaseAccess.getInstance(getActivity());
+        databaseAccess.open();
+        RadioButton rbbtn = (RadioButton) v;
+        if(rbbtn.isChecked()){
+            databaseAccess.saveAnswer(g.getEmployee().getId()+"",EVENTCATEGORY,quesId,EVENTID+"",v.getContentDescription().toString());
+//            Toast.makeText(getContext(),"RB Selected",Toast.LENGTH_SHORT).show();
+        }
+        databaseAccess.close();
+        boolean movePage = true;
+        editor.commit();
+        if(vp.getCurrentItem() <= vp.getAdapter().getCount()){
+            if(movePage){
+                vp.setCurrentItem(currentPage);
+            }
+        }
+        if(questionNumMax == vp.getAdapter().getCount()){
+            if(movePage){
+                startActivity(new Intent(getActivity(), FinishActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                getActivity().finish();
+            }
         }
     }
 
 }
+

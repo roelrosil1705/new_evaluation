@@ -6,13 +6,21 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by henry on 10/05/2016.
  */
-public class EventModel extends RealmObject {
+public class EventModel {
 
-    @PrimaryKey
-    private long id;
-    private String name;
-    private String jonum;
-    private String eventdate;
+    public long id;
+    public String name;
+    public String jonum;
+    public String eventdate;
+    public String eventtime;
+
+    public String getEventtime() {
+        return eventtime;
+    }
+
+    public void setEventtime(String eventtime) {
+        this.eventtime = eventtime;
+    }
 
     public long getId() {
         return id;

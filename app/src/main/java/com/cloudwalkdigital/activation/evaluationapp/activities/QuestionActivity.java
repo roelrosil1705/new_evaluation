@@ -28,6 +28,7 @@ import com.cloudwalkdigital.activation.evaluationapp.adapter.QuestionAdapter;
 import com.cloudwalkdigital.activation.evaluationapp.constant.Constant;
 import com.cloudwalkdigital.activation.evaluationapp.models.DataBaseHelper;
 import com.cloudwalkdigital.activation.evaluationapp.R;
+import com.cloudwalkdigital.activation.evaluationapp.utils.Globals;
 
 import java.io.IOException;
 
@@ -60,10 +61,12 @@ public class QuestionActivity extends AppCompatActivity {
     SharedPreferences sharedPreference;
     SharedPreferences.Editor editor;
     String LOG_IN = "User";
+    Globals g = Globals.getInstance();
 
     public String EVALUATOR = "AE";
-    public String DEPT_QUESTION = "Accounts";
+    public String DEPT_QUESTION = "Account Executive";
     public String EVENT_NAME = "DOVE EVENT";
+    public String EVENTCATEGORY = "Pre Event";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,25 +78,14 @@ public class QuestionActivity extends AppCompatActivity {
         pBar.setProgress(0);
         sharedPreference = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         LOG_IN = sharedPreference.getString("EVALUATOR", "");
-        switch(LOG_IN){
-            case "accounts":
-                dLabel.setText("Operations");
-                toolbar.setBackgroundResource(R.color.cmtuvaColor);
-                ll_heading.setBackgroundResource(R.color.cmtuvaColor);
-                break;
-            case "cmtuva":
-                toolbar.setBackgroundResource(R.color.cmtuvaColor);
-                ll_heading.setBackgroundResource(R.color.cmtuvaColor);
-                break;
-        }
-        //Constant.accountsQuestion[0][0][0][0] //choices count
-        //Constant.accountsQuestion[0][1][0][0] //question
-        //Constant.accountsQuestion[0][2][1][0] //answers
-        //Toast.makeText(getApplicationContext(),"length = " + Constant.accountsQuestion[0][2][1][0],Toast.LENGTH_LONG).show();
+        EVENTCATEGORY = sharedPreference.getString("EVENTCATEGORY", "");
+        EVENT_NAME = sharedPreference.getString("EVENTNAME", "");
+        sLabel.setText(EVENTCATEGORY);
+        hTitle.setText(EVENT_NAME);
         QuestionAdapter.setContext(getApplicationContext());
-        //vp_container.setAdapter(new AccountsAdapter(getSupportFragmentManager()));
         vp_container.setAdapter(new QuestionAdapter(getSupportFragmentManager()));
         qLabel.setText("Question "+(vp_container.getCurrentItem() + 1)+" of "+vp_container.getAdapter().getCount());
+        changeUi(vp_container.getCurrentItem());
         vp_container.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
             public void onPageSelected(int position) {
                 qLabel.setText("Question "+(vp_container.getCurrentItem() + 1)+" of "+vp_container.getAdapter().getCount());
@@ -107,63 +99,8 @@ public class QuestionActivity extends AppCompatActivity {
                 toolbar.setSubtitleTextColor(Color.WHITE);
                 hTitle.setTextColor(Color.WHITE);
                 dLabel.setTextColor(Color.WHITE);
-                switch(LOG_IN){
-                    case "accounts":
-                        if(curPosition > 0 && curPosition <= 5){
-                            dLabel.setText("Operations");
-                            toolbar.setBackgroundResource(R.color.cmtuvaColor);
-                            ll_heading.setBackgroundResource(R.color.cmtuvaColor);
-                        }else if(curPosition > 5 && curPosition <= 9){
-                            dLabel.setText("Project Managers");
-                            toolbar.setBackgroundResource(R.color.pmColor);
-                            ll_heading.setBackgroundResource(R.color.pmColor);
-                            toolbar.setTitleTextColor(Color.BLACK);
-                            toolbar.setSubtitleTextColor(Color.BLACK);
-                            hTitle.setTextColor(Color.BLACK);
-                            dLabel.setTextColor(Color.BLACK);
-                        }else if(curPosition > 9 && curPosition <= 13){
-                            dLabel.setText("Team Leaders Rating");
-                            toolbar.setBackgroundResource(R.color.pmColor);
-                            ll_heading.setBackgroundResource(R.color.pmColor);
-                            toolbar.setTitleTextColor(Color.BLACK);
-                            toolbar.setSubtitleTextColor(Color.BLACK);
-                            hTitle.setTextColor(Color.BLACK);
-                            dLabel.setTextColor(Color.BLACK);
-                        }else if(curPosition > 13 && curPosition <= 15){
-                            dLabel.setText("Setup");
-                            toolbar.setBackgroundResource(R.color.pmColor);
-                            ll_heading.setBackgroundResource(R.color.pmColor);
-                            toolbar.setTitleTextColor(Color.BLACK);
-                            toolbar.setSubtitleTextColor(Color.BLACK);
-                            hTitle.setTextColor(Color.BLACK);
-                            dLabel.setTextColor(Color.BLACK);
-                        }else if(curPosition > 15 && curPosition <= 22){
-                            dLabel.setText("Setup Leaders Assessment");
-                            toolbar.setBackgroundResource(R.color.pmColor);
-                            ll_heading.setBackgroundResource(R.color.pmColor);
-                            toolbar.setTitleTextColor(Color.BLACK);
-                            toolbar.setSubtitleTextColor(Color.BLACK);
-                            hTitle.setTextColor(Color.BLACK);
-                            dLabel.setTextColor(Color.BLACK);
-                        }else if(curPosition > 22 && curPosition <= 36){
-                            dLabel.setText("Production");
-                            toolbar.setBackgroundResource(R.color.prColor);
-                            ll_heading.setBackgroundResource(R.color.prColor);
-                        }else if(curPosition > 36 && curPosition <= 47){
-                            dLabel.setText("Inventory");
-                            toolbar.setBackgroundResource(R.color.invColor);
-                            ll_heading.setBackgroundResource(R.color.invColor);
-                        }else if(curPosition > 47 && curPosition <= 52){
-                            dLabel.setText("Human Resource Department");
-                            toolbar.setBackgroundResource(R.color.hrColor);
-                            ll_heading.setBackgroundResource(R.color.hrColor);
-                        }
-                        break;
-                    case "cmtuva":
-                        toolbar.setBackgroundResource(R.color.cmtuvaColor);
-                        ll_heading.setBackgroundResource(R.color.cmtuvaColor);
-                        break;
-                }
+                changeUi(vp_container.getCurrentItem());
+
             }
         });
 
@@ -178,12 +115,78 @@ public class QuestionActivity extends AppCompatActivity {
 
     }
 
+
+    public void changeUi(int curPosition){
+        switch(Integer.parseInt(g.getQuestion().get(curPosition).getQdept())){
+            case 1:
+                dLabel.setText("Account Executive");
+                toolbar.setBackgroundResource(R.color.accountsColor);
+                ll_heading.setBackgroundResource(R.color.accountsColor);
+                break;
+            case 2:
+                dLabel.setText("Operations");
+                toolbar.setBackgroundResource(R.color.cmtuvaColor);
+                ll_heading.setBackgroundResource(R.color.cmtuvaColor);
+                break;
+            case 3:
+                dLabel.setText("Negotiator's Assesment");
+                toolbar.setBackgroundResource(R.color.stpColor);
+                ll_heading.setBackgroundResource(R.color.stpColor);
+                break;
+            case 4:
+                dLabel.setText("Project Manager's");
+                toolbar.setBackgroundResource(R.color.stpColor);
+                ll_heading.setBackgroundResource(R.color.stpColor);
+                break;
+            case 5:
+                dLabel.setText("Team Leader's Rating");
+                toolbar.setBackgroundResource(R.color.stpColor);
+                ll_heading.setBackgroundResource(R.color.stpColor);
+                break;
+            case 6:
+                dLabel.setText("Setup");
+                toolbar.setBackgroundResource(R.color.stpColor);
+                ll_heading.setBackgroundResource(R.color.stpColor);
+                break;
+            case 7:
+                dLabel.setText("Setup Leader Assesment");
+                toolbar.setBackgroundResource(R.color.stpColor);
+                ll_heading.setBackgroundResource(R.color.stpColor);
+                break;
+            case 8:
+                dLabel.setText("Production");
+                toolbar.setBackgroundResource(R.color.prColor);
+                ll_heading.setBackgroundResource(R.color.prColor);
+                break;
+            case 9:
+                dLabel.setText("Inventory");
+                toolbar.setBackgroundResource(R.color.invColor);
+                ll_heading.setBackgroundResource(R.color.invColor);
+                break;
+            case 10:
+                dLabel.setText("Human Resource Department");
+                toolbar.setBackgroundResource(R.color.hrColor);
+                ll_heading.setBackgroundResource(R.color.hrColor);
+                break;
+        }
+    }
+
+    @OnClick(R.id.section_label)
+    public void backCat(){
+        startActivity(new Intent(getApplicationContext(), Category.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+        finish();
+    }
+
     @OnClick(R.id.nxtBtn)
     public void nextPage(){
         int totalPage = vp_container.getAdapter().getCount();
         int page = getItem() + 1;
         if(page <= totalPage){
             vp_container.setCurrentItem(page, true);
+            if(page == vp_container.getAdapter().getCount()){
+                startActivity(new Intent(getApplicationContext(), FinishActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+                finish();
+            }
         }
     }
 

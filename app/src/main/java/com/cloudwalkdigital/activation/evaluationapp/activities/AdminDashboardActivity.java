@@ -100,6 +100,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
             case R.id.action_add_events:
                 startActivityForResult(new Intent(this, CreateEventsActivity.class), REQUEST_CODE);
                 break;
+            case R.id.action_result:
+                startActivityForResult(new Intent(this, ResultActivity.class), REQUEST_CODE);
+                break;
         }
 
         return super.onOptionsItemSelected(item);

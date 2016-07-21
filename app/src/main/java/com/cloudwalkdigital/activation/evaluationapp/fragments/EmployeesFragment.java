@@ -67,17 +67,6 @@ public class EmployeesFragment extends Fragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         rvList.setLayoutManager(llm);
 
-        listEmployeeModels = new ArrayList<EmployeeModel>();
-        employeeAdapter = new EmployeeAdapter(listEmployeeModels);
-
-        //Query for all the employee
-        RealmResults<EmployeeModel> query = realm.where(EmployeeModel.class).findAll();
-        query.sort("id", Sort.DESCENDING);
-        for(EmployeeModel o : query) {
-            listEmployeeModels.add(o);
-        }
-        rvList.setAdapter(employeeAdapter);
-
 
         return view;
     }

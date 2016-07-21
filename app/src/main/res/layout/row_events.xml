@@ -16,14 +16,18 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="15dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp">
 
             <TextView
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
+                android:textSize="35sp"
                 android:textStyle="bold"
+                android:textColor="@color/colorPrimary"
                 android:text="Name"/>
 
             <TextView
@@ -32,18 +36,38 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:textSize="20sp"
+                android:textColor="#702a92db"
                 android:text="Job Title"/>
+
+            <TextView
+                android:id="@+id/tv_eventdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#70414345"
+                android:text="EventDate"/>
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_eventdate"
+            android:id="@+id/tv_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:textSize="22sp"
+            android:visibility="invisible"
             android:textStyle="bold"
-            android:text="EventDate"/>
+            android:text="ID"/>
+
+        <TextView
+            android:id="@+id/event_expires"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:textSize="22sp"
+            android:visibility="invisible"
+            android:textStyle="bold"
+            android:text="ID"/>
 
     </FrameLayout>
 

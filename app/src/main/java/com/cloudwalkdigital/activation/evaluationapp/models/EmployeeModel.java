@@ -6,13 +6,38 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by jpjpjp28 on 14/04/2016.
  */
-public class EmployeeModel extends RealmObject {
+public class EmployeeModel {
 
-    @PrimaryKey
     private long id;
-    private String name;
+    private String fname;
+    private String lname;
     private String email;
     private String department;
+    private String password = "12345";
+
+    public String getFname() {
+        return fname;
+    }
+
+    public void setFname(String fname) {
+        this.fname = fname;
+    }
+
+    public String getLname() {
+        return lname;
+    }
+
+    public void setLname(String lname) {
+        this.lname = lname;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public long getId() {
         return id;
@@ -20,14 +45,6 @@ public class EmployeeModel extends RealmObject {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getEmail() {

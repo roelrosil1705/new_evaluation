@@ -24,8 +24,8 @@ import io.realm.RealmConfiguration;
  */
 public class CreateEmployeeActivity extends AppCompatActivity {
 
-    String[] arrayDepartment = { "Accounts", "Operations", "Negotiators Assessment", "Project Manager", "Team Leaders", "Setup",
-            "Setup Leaders Assesment" , "Production", "Inventory", "Human Resources" };
+    String[] arrayDepartment = { "Account Executive", "Operations", "Project Manager", "Activations Head", "Setup Head", "CEO",
+            "Accounting", "Inventory Head", "Human Resources Head", "Production Representative" };
 
     private Realm realm;
     private RealmConfiguration realmConfig;
@@ -77,24 +77,7 @@ public class CreateEmployeeActivity extends AppCompatActivity {
         EmployeeModel employeeModel = new EmployeeModel();
         //EmployeeModel employeeModel = realm.allObjects(EmployeeModel.class);
         long key = 0;
-        if(employeeModel.isValid()){
-            employeeModel = new EmployeeModel();
-        }else{
-            employeeModel = realm.createObject(EmployeeModel.class);
-        }
 
-        try {
-            key = realm.where(EmployeeModel.class).max("id").longValue() + 1;
-        } catch (ArrayIndexOutOfBoundsException e) {
-            key = 0;
-        }
-
-        employeeModel.setId(key);
-        employeeModel.setName(name);
-        employeeModel.setEmail(email);
-        employeeModel.setDepartment(department);
-        realm.copyToRealm(employeeModel);
-        realm.commitTransaction();
 
         Close();
     }
